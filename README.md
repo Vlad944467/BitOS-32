@@ -2,7 +2,7 @@
 
 **32-битная монолитная операционная система, написанная на C и Assembly**
 
-## 🚀 Возможности
+## Возможности
 
 - ✅ 32-битный защищённый режим
 - ✅ Загрузка по стандарту Multiboot (GRUB/QEMU)
@@ -11,11 +11,12 @@
 - ✅ Звук через PC Speaker
 - ✅ Встроенные команды: `help`, `clear`, `reboot`, `echo`, `win`, `cat`, `fetch`
 
-## 🛠️ Сборка и запуск
+## Сборка и запуск
 
 ### Ручная сборка
 
 ```bash
 nasm -f elf32 boot.s -o boot.o
-gcc -m32 -ffreestanding -nostdlib -c kernel.c -o kernel.o
-ld -m elf_i386 -T linker.ld -o bitos.bin boot.o kernel.o
+gcc -m32 -ffreestanding -nostdlib -c kernel1.c -o kernel1.o
+gcc -m32 -ffreestanding -nostdlib -c read_keyboard.c -o read_keyboard.o
+ld -m elf_i386 -T linker.ld -o bitos.elf boot.o kernel1.o
