@@ -1,9 +1,15 @@
+
 #include <stdint.h>
 #include <stddef.h>
 
 #define VIDEO_MEMORY 0xB8000
+#define BLUE_ON_WHITE 0xF1
+#define GREEN_ON_WHITE 0xF2
+#define RED_ON_WHITE 0xF4
+#define BLACK_ON_WHITE 0xF0
+#define CYAN_ON_WHITE 0xF3
+#define MAGENTA_ON_WHITE 0xF5
 
-// Цвета для чёрного фона
 #define WHITE_ON_BLACK  0x0F
 #define GREEN_ON_BLACK  0x02
 #define RED_ON_BLACK    0x04
@@ -66,10 +72,8 @@ char *history[MAX_HIST];
 int hist_count = 0;
 int ticks = 0;
 
-// ТЕКУЩИЙ ЦВЕТ ФОНА (по умолчанию чёрный)
 int bg_color = 0x00;
 
-//табельные команды
 void cmd_h(char *args);
 void cmd_hello(char *args);
 void cmd_time(char *args);
@@ -85,15 +89,37 @@ void cmd_bgcolor(char *args);
 void cmd_edit_par(char *args);
 void clear_cmd(char *args);
 
+void ata_read_sector(uint32_t lba, uint8_t* buffer);
+void ata_write_sector(uint32_t lba, uint8_t* buffer);
+int ata_detect(int port);
+void ata_get_model(int port, char *model);
 
-// =структура команд=
+unsigned char inb(unsigned short port) {
+    unsigned char result;
+    __asm__ volatile ("inb %1, %0" : "=a"(result) : "Nd"(port));
+    return result;
+}
+
+void outb(unsigned short port, unsigned char value) {
+    __asm__ volatile ("outb %0, %1" : : "a"(value), "Nd"(port));
+}
+
+uint16_t inw(uint16_t port) {
+    uint16_t result;
+    __asm__ volatile ("inw %1, %0" : "=a"(result) : "Nd"(port));
+    return result;
+}
+
+void outw(uint16_t port, uint16_t value) {
+    __asm__ volatile ("outw %0, %1" : : "a"(value), "Nd"(port));
+}
+
 typedef struct {
     char *name;
     void (*func)(char *args);
     char *desc;
 } command_t;
 
-// ===================== таблица табельных команд  =====================
 command_t commands[] = {
     {"help",  cmd_h,     "Show table commands"},
     {"hello", cmd_hello, "Say hello"},
@@ -108,58 +134,6 @@ command_t commands[] = {
     {"clear", clear_cmd, "clear screen"},
     {NULL, NULL, NULL}
 };
-
-//======================ATA драйвера=======================
-uint16_t inw(uint16_t port) {
-    uint16_t result;
-    __asm__ volatile ("inw %1, %0" : "=a"(result) : "Nd"(port));
-    return result;
-}
-
-void outw(uint16_t port, uint16_t value) {
-    __asm__ volatile ("outw %0, %1" : : "a"(value), "Nd"(port));
-}
-
-unsigned char inb(unsigned short port) {
-    unsigned char result;
-    __asm__ volatile ("inb %1, %0" : "=a"(result) : "Nd"(port));
-    return result;
-}
-
-void outb(unsigned short port, unsigned char value) {
-    __asm__ volatile ("outb %0, %1" : : "a"(value), "Nd"(port));
-}
-
-void ata_wait() {
-    while ((inb(0x1F7) & 0xC0) != 0x40);
-}
-
-void ata_read_sector(uint32_t lba, uint8_t* buffer) {
-    outb(0x1F6, 0xE0 | ((lba >> 24) & 0x0F));
-    outb(0x1F2, 1);
-    outb(0x1F3, (uint8_t)lba);
-    outb(0x1F4, (uint8_t)(lba >> 8));
-    outb(0x1F5, (uint8_t)(lba >> 16));
-    outb(0x1F7, 0x20);
-    ata_wait();
-    for (int i = 0; i < 256; i++) {
-        ((uint16_t*)buffer)[i] = inw(0x1F0);
-    }
-}
-
-void ata_write_sector(uint32_t lba, uint8_t* buffer) {
-    outb(0x1F6, 0xE0 | ((lba >> 24) & 0x0F));
-    outb(0x1F2, 1);
-    outb(0x1F3, (uint8_t)lba);
-    outb(0x1F4, (uint8_t)(lba >> 8));
-    outb(0x1F5, (uint8_t)(lba >> 16));
-    outb(0x1F7, 0x30);
-    ata_wait();
-    for (int i = 0; i < 256; i++) {
-        outw(0x1F0, ((uint16_t*)buffer)[i]);
-    }
-    ata_wait();
-}
 
 void save_note(int slot, char* name) {
     if (slot >= 0 && slot < 10) {
@@ -190,7 +164,7 @@ void putchar(char c, int color) {
         cursor += 80 - (cursor % 80);
     } else {
         video[cursor * 2] = c;
-        video[cursor * 2 + 1] = color;
+        video[cursor * 2 +1] = color;
         cursor++;
     }
 
@@ -272,13 +246,11 @@ void putchar_at(int x, int y, char c, int color) {
 void clear_screen() {
     char* video = (char*)0xB8000;
 
-    // Синяя полоса сверху
     for (int i = 0; i < 80; i++) {
         video[i * 2] = ' ';
         video[i * 2 + 1] = 0x17;
     }
 
-    // Остальное — чёрный фон
     int default_attr = bg_color | 0x0F;
     for (int i = 80; i < 80 * 25; i++) {
         video[i * 2] = ' ';
@@ -300,7 +272,7 @@ char* strcpy(char* dest, const char* src) {
 }
 
 void update_prompt() {
-    int color = bg_color | 0x02; // Зелёный текст на текущем фоне
+    int color = bg_color | 0x02;
     say(current_dir, color);
     say("> ", color);
 }
@@ -363,30 +335,6 @@ void show_history() {
         say(history[i], color);
         say("\n", color);
     }
-}
-
-int ata_detect(int port) {
-    outb(port + 6, 0xA0);
-    outb(port + 2, 0xEC);
-    for (int i = 0; i < 1000; i++) {
-        if ((inb(port + 7) & 0x80) == 0) break;
-    }
-    if (inb(port + 7) == 0x00) return 0;
-    return 1;
-}
-
-void ata_get_model(int port, char *model) {
-    unsigned short buffer[256];
-    outb(port + 6, 0xA0);
-    outb(port + 2, 0xEC);
-    for (int i = 0; i < 256; i++) {
-        buffer[i] = inw(port);
-    }
-    for (int i = 0; i < 20; i++) {
-        model[i * 2] = buffer[27 + i] >> 8;
-        model[i * 2 + 1] = buffer[27 + i] & 0xFF;
-    }
-    model[40] = '\0';
 }
 
 void gotoxy(int x, int y) {
@@ -455,9 +403,6 @@ void install_os() {
     read_keyboard();
 }
 
-// ============================================
-// КОМАНДА СМЕНЫ ФОНА
-// ============================================
 void cmd_bgcolor(char *args) {
     if (!args) {
         say("Usage: bgcolor <0-F>\n", 0x0F);
@@ -486,10 +431,6 @@ void cmd_bgcolor(char *args) {
     say("Background color changed\n", bg_color | 0x0A);
     update_prompt();
 }
-
-// ============================================
-// ТАБЕЛЬНЫЕ КОМАНДЫ
-// ============================================
 
 void cmd_h(char *args) {
     int color = bg_color | 0x0F;
@@ -605,16 +546,11 @@ void cmd_time(char *args) {
     say("\n", color);
 }
 
-// ============================================
-// КОМАНДА EDIT ДЛЯ ПАРСЕРА
-// ============================================
-
 void cmd_edit_par(char *args) {
     char line[256];
     char full_text[4096] = "";
     int color = bg_color | 0x0F;
     int green = bg_color | 0x02;
-    int red = bg_color | 0x04;
 
     say("========== BITOS EDITOR ==========\n", color);
     say("Commands: /wq - save, /q. - exit, /ls - show\n", 0x70);
@@ -750,10 +686,6 @@ void cmd_type(char *args) {
     say(": command not found\n", 0x0C);
 }
 
-// ============================================
-// КОНЕЦ ТАБЕЛЬНЫХ КОМАНД
-// ============================================
-
 void readline(char *buf) {
     int i = 0;
     char c;
@@ -786,7 +718,6 @@ void init() {
         video[i * 2 + 1] = 0x00;
     }
 
-    // Цвет для сообщения (зелёный на чёрном)
     int color = 0x02;
     say("                              [ OK ] Loading kernel...", color);
     for (int i = 0; i < 3000000; i++);
@@ -797,13 +728,11 @@ void main(void) {
 
     char* video = (char*) VIDEO_MEMORY;
 
-    // Синяя полоса сверху
     for (int i = 0; i < 80; i++) {
         video[i * 2] = ' ';
         video[i * 2 + 1] = 0x17;
     }
 
-    // Остальное — чёрный фон (bg_color = 0x00)
     bg_color = 0x00;
     int default_attr = bg_color | 0x0F;
     for (int i = 80; i < 80 * 25; i++) {
@@ -915,11 +844,6 @@ void main(void) {
                 say("First byte: ", color);
                 print_int(sector[0], color);
                 say(" (should be 235 for FAT16)\n", color);
-            }
-            e if (strcmp(cmd, "pp2") == 0) {
-                say("╔══════════╗\n", color);
-                say("║        ║\n", color);
-                say("╚══════════╝\n", color);
             }
             e if (strcmp(cmd, "mode") == 0) {
                 say("Protected mode (32-bit)\n", color);
@@ -1167,7 +1091,7 @@ void main(void) {
 
             e if (strcmp(cmd, "kernel") == 0)  {
                 say("\n", color);
-                say("Version kernel: sysb9\n", color);
+                say("Version kernel: sysb23\n", color);
                 say("Version OS: 2.0\n", color);
             }
             e if (strcmp(cmd, "files") == 0) {
