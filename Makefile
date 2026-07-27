@@ -1,11 +1,9 @@
-# Makefile для BitOS-32
-
 CC = gcc
 CFLAGS = -m32 -ffreestanding -nostdlib -c
 LD = ld
-LDFLAGS = -m elf_i386 -T linker2.ld
+LDFLAGS = -m elf_i386 -T boot/linker.ld
 
-TARGET = BitOS.elf
+TARGET = sysb21.elf
 OBJS = boot.o kenel1.o read_keyboard.o ata.o
 
 all: $(TARGET)
@@ -13,16 +11,16 @@ all: $(TARGET)
 $(TARGET): $(OBJS)
 	$(LD) $(LDFLAGS) -o $@ $^
 
-boot.o: boot.asm
+boot.o: boot/boot.asm
 	nasm -f elf32 $< -o $@
 
-kenel1.o: kenel1.c
+kenel1.o: kernel/kenel1.c
 	$(CC) $(CFLAGS) $< -o $@
 
-read_keyboard.o: read_keyboard.c
+read_keyboard.o: kernel/read_keyboard.c
 	$(CC) $(CFLAGS) $< -o $@
 
-ata.o: ata.c
+ata.o: kernel/ata.c
 	$(CC) $(CFLAGS) $< -o $@
 
 clean:
