@@ -3,8 +3,8 @@ CFLAGS = -m32 -ffreestanding -nostdlib -c
 LD = ld
 LDFLAGS = -m elf_i386 -T boot/linker.ld
 
-TARGET = sysb21.elf
-OBJS = boot.o kenel1.o read_keyboard.o ata.o
+TARGET = sysb37.elf
+OBJS = boot.o kenel1.o commands.o read_keyboard.o ata.o
 
 all: $(TARGET)
 
@@ -15,6 +15,9 @@ boot.o: boot/boot.asm
 	nasm -f elf32 $< -o $@
 
 kenel1.o: kernel/kenel1.c
+	$(CC) $(CFLAGS) $< -o $@
+
+commands.o: kernel/commands.c
 	$(CC) $(CFLAGS) $< -o $@
 
 read_keyboard.o: kernel/read_keyboard.c
