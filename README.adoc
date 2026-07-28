@@ -1,0 +1,140 @@
+= BitOS-32
+:author: Vlad
+:revdate: 2026-07-28
+:lang: ru
+
+image:https://img.shields.io/badge/OS-32--bit-blue.svg[32-bit]
+image:https://img.shields.io/badge/lang-C-blue.svg[C]
+image:https://img.shields.io/badge/license-MIT-green.svg[MIT]
+
+**32-битная монолитная операционная система, написанная на C и Assembly**
+
+
+== Возможности
+
+* ✅ 32-битный защищённый режим
+* ✅ Загрузка по стандарту Multiboot (GRUB/QEMU)
+* ✅ Поддержка клавиатуры PS/2
+* ✅ Текстовый режим VGA (80x25, 16 цветов)
+* ✅ Звук через PC Speaker
+* ✅ Встроенные команды: `help`, `clear`, `reboot`, `echo`, `win`, `cat`, `fetch`
+* ✅ ATA драйвер (чтение/запись секторов)
+* ✅ Собственный шелл с историей команд
+* ✅ Монолитное ядро
+
+
+== Сборка и запуск
+
+=== Ручная сборка
+
+.Сборка загрузчика
+[source,bash]
+----
+nasm -f elf32 boot/boot.asm -o boot.o
+----
+
+.Компиляция ядра
+[source,bash]
+----
+gcc -m32 -ffreestanding -nostdlib -c kernel/kenel1.c -o kenel1.o
+gcc -m32 -ffreestanding -nostdlib -c kernel/commands.c -o commands.o
+gcc -m32 -ffreestanding -nostdlib -c kernel/read_keyboard.c -o read_keyboard.o
+gcc -m32 -ffreestanding -nostdlib -c kernel/ata.c -o ata.o
+----
+
+.Линковка
+[source,bash]
+----
+ld -m elf_i386 -T boot/linker.ld -o BitOS.elf boot.o kenel1.o commands.o read_keyboard.o ata.o
+----
+
+=== Сборка через Makefile
+
+[source,bash]
+----
+make
+make clean
+make rebuild
+----
+
+=== Запуск в QEMU
+
+[source,bash]
+----
+qemu-system-i386 -kernel sysb37.elf
+---
+
+== Структура проекта
+
+[source,text]
+----
+BitOS-32/
+├── boot/
+│   ├── boot.asm          # Загрузчик
+│   └── linker.ld         # Линковщик
+├── kernel/
+│   ├── kenel1.c          # Ядро
+│   ├── commands.c        # Команды
+│   ├── read_keyboard.c   # Клавиатура
+│   └── ata.c             # ATA драйвер
+├── grub/
+│   └── grub.cfg          # Конфиг GRUB
+├── docs/
+│   └── COMMANDS.md       # Документация по командам
+├── images/               # Скриншоты
+├── Makefile
+├── README.adoc
+----
+
+
+== Команды
+
+=== Основные команды
+
+[cols="1,3"]
+|===
+| Команда | Описание
+| `help` | Показать справку
+| `clear` | Очистить экран
+| `reboot` | Перезагрузить систему
+| `shutdown` | Выключить систему
+| `echo` | Вывести текст
+| `edit` | Текстовый редактор
+| `notes` | Показать сохранённую заметку
+| `save` | Сохранить заметку
+| `load` | Загрузить заметку
+| `bgcolor` | Сменить цвет фона
+| `fetch` | Информация об ОС
+|===
+
+=== Табличные команды (через `par`)
+
+[cols="1,3"]
+|===
+| Команда | Описание
+| `par help` | Справка по табличным командам
+| `par hello` | Приветствие
+| `par time` | Показать время
+| `par calc` | Калькулятор (например: `par calc 2+3`)
+| `par sleep` | Пауза
+| `par bgcolor` | Сменить цвет фона
+| `par edit` | Редактор
+| `par clear` | Очистка экрана
+| `par type` | Узнать тип команды
+|===
+
+
+== Лицензия
+
+*MIT License*
+
+Copyright (c) 2026 Vlad
+
+Разрешается использовать, копировать, изменять и распространять код.
+
+
+== Автор
+
+*Влад*
+
+GitHub: https://github.com/Vlad944467/BitOS-32
