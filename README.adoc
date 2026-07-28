@@ -5,7 +5,7 @@
 
 image:https://img.shields.io/badge/OS-32--bit-blue.svg[32-bit]
 image:https://img.shields.io/badge/lang-C-blue.svg[C]
-image:https://img.shields.io/badge/license-MIT-green.svg[MIT]
+image:https://img.shields.io/badge/license-GPLv3-green.svg[GPLv3]
 
 **32-битная монолитная операционная система, написанная на C и Assembly**
 
@@ -127,15 +127,28 @@ BitOS-32/
 
 == Лицензия
 
-*MIT License*
+*GNU General Public License v3.0*
 
 Copyright (c) 2026 Vlad
 
-Разрешается использовать, копировать, изменять и распространять код.
+Это свободное программное обеспечение.
+
+**Можно:**
+* Использовать, изменять и распространять код
+* Использовать в коммерческих проектах
+
+**Нельзя:**
+* Закрывать код, если использовали этот
+
+**Нужно:**
+* Указывать автора
+* Делиться изменениями под той же лицензией
+
+Полный текст лицензии: https://www.gnu.org/licenses/gpl-3.0.html
 
 
 == Автор
 
-*Влад*
+*Vlad944467*
 
 GitHub: https://github.com/Vlad944467/BitOS-32
