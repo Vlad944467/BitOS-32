@@ -19,5 +19,6 @@
 nasm -f elf32 boot.s -o boot.o
 gcc -m32 -ffreestanding -nostdlib -c kernel1.c -o kernel1.o
 gcc -m32 -ffreestanding -nostdlib -c read_keyboard.c -o read_keyboard.o
-gcc -m32 -ffreestanding -nostdlib -c asm.c -o asm.o
+gcc -m32 -ffreestanding -nostdlib -c ata.c -o ata.o
+gcc -m32 -ffreestanding -nostdlib - c commands.c -o commands.o
 ld -m elf_i386 -T linker.ld -o bitos.elf boot.o kernel1.o
