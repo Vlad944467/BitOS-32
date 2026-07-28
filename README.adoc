@@ -64,26 +64,24 @@ make rebuild
 qemu-system-i386 -kernel sysb37.elf
 ---
 
-== Структура проекта
-
-[source,text]
+[source,tree]
 ----
 BitOS-32/
 ├── boot/
-│   ├── boot.asm          # Загрузчик
-│   └── linker.ld         # Линковщик
+│   ├── boot.asm
+│   └── linker.ld
 ├── kernel/
-│   ├── kenel1.c          # Ядро
-│   ├── commands.c        # Команды
-│   ├── read_keyboard.c   # Клавиатура
-│   └── ata.c             # ATA драйвер
+│   ├── kenel1.c
+│   ├── commands.c
+│   ├── read_keyboard.c
+│   └── ata.c
 ├── grub/
-│   └── grub.cfg          # Конфиг GRUB
+│   └── grub.cfg
 ├── docs/
-│   └── COMMANDS.md       # Документация по командам
-├── images/               # Скриншоты
+│   └── COMMANDS.md
+├── images/
 ├── Makefile
-├── README.adoc
+└── README.adoc
 ----
 
 
