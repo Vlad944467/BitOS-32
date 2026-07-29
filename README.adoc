@@ -1,5 +1,5 @@
 = BitOS-32
-:author: Vlad
+:author: Vlad944467
 :revdate: 2026-07-28
 :lang: ru
 
