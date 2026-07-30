@@ -40,12 +40,13 @@ gcc -m32 -ffreestanding -nostdlib -c kernel/kenel1.c -o kenel1.o
 gcc -m32 -ffreestanding -nostdlib -c kernel/commands.c -o commands.o
 gcc -m32 -ffreestanding -nostdlib -c kernel/read_keyboard.c -o read_keyboard.o
 gcc -m32 -ffreestanding -nostdlib -c kernel/ata.c -o ata.o
+gcc -m32 -ffreestanding -nostdlib -c kernel/video.c -o video.o
 ----
 
 .Линковка
 [source,bash]
 ----
-ld -m elf_i386 -T boot/linker.ld -o BitOS.elf boot.o kenel1.o commands.o read_keyboard.o ata.o
+ld -m elf_i386 -T boot/linker.ld -o BitOS.elf boot.o kenel1.o commands.o read_keyboard.o ata.o video.o
 ----
 
 === Сборка через Makefile
@@ -83,7 +84,8 @@ BitOS-32/
 │   └── grub.cfg         
 ├── docs/
 │   └── COMMANDS.md       
-├── images/               
+├── images/
+├── LICENSE.adoc 
 ├── Makefile
 └── README.adoc
 ----
