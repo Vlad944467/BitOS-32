@@ -7,6 +7,11 @@
 #define RED_ON_BLACK    0x04
 #define MAX_HIST 20
 
+#define BLACK_ON_WHITE 0xF0
+#define BLUE_ON_WHITE 0xF1
+#define BLUE_ON_GRAY 0x72
+#define BLACK_ON_GRAY 0x70
+
 #define say(s, c) print(s, c)
 #define cls clear_screen()
 
@@ -64,6 +69,14 @@ int ata_detect(int port);
 void ata_get_model(int port, char *model);
 char read_keyboard(void);
 
+void putchar(char c, int color);
+void print(const char* str, int color);
+void print_int(int num, int color);
+void clear_screen(void);
+void gotoxy(int x, int y);
+void update_prompt(void);
+void set_small_font(void);
+
 unsigned char inb(unsigned short port) {
     unsigned char result;
     __asm__ volatile ("inb %1, %0" : "=a"(result) : "Nd"(port));
@@ -82,65 +95,6 @@ uint16_t inw(uint16_t port) {
 
 void outw(uint16_t port, uint16_t value) {
     __asm__ volatile ("outw %0, %1" : : "a"(value), "Nd"(port));
-}
-
-void putchar(char c, int color) {
-    static int cursor = 0;
-    char* video = (char*) VIDEO_MEMORY;
-    if (c == '\n') {
-        cursor += 80 - (cursor % 80);
-    } else {
-        video[cursor * 2] = c;
-        video[cursor * 2 + 1] = color;
-        cursor++;
-    }
-    if (cursor >= 80 * 25) {
-        for (int i = 80; i < 80 * 25; i++) {
-            video[(i - 80) * 2] = video[i * 2];
-            video[(i - 80) * 2 + 1] = video[i * 2 + 1];
-        }
-        for (int i = 80 * 24; i < 80 * 25; i++) {
-            video[i * 2] = ' ';
-            video[i * 2 + 1] = color;
-        }
-        cursor -= 80;
-    }
-}
-
-void print(const char* str, int color) {
-    while (*str) putchar(*str++, color);
-}
-
-void print_int(int num, int color) {
-    if (num == 0) { putchar('0', color); return; }
-    if (num < 0) { putchar('-', color); num = -num; }
-    char buf[16];
-    int i = 0;
-    while (num > 0) {
-        buf[i++] = '0' + (num % 10);
-        num /= 10;
-    }
-    while (i > 0) putchar(buf[--i], color);
-}
-
-void clear_screen() {
-    char* video = (char*)0xB8000;
-    for (int i = 0; i < 80; i++) video[i * 2] = ' ', video[i * 2 + 1] = 0x17;
-    for (int i = 80; i < 80 * 25; i++) video[i * 2] = ' ', video[i * 2 + 1] = bg_color | 0x0F;
-    say("\n", bg_color | 0x0F);
-}
-
-void gotoxy(int x, int y) {
-    int pos = y * 80 + x;
-    outb(0x3D4, 0x0F);
-    outb(0x3D5, (unsigned char)(pos & 0xFF));
-    outb(0x3D4, 0x0E);
-    outb(0x3D5, (unsigned char)((pos >> 8) & 0xFF));
-}
-
-void update_prompt() {
-    say(current_dir, bg_color | 0x02);
-    say("> ", bg_color | 0x02);
 }
 
 int strcmp(const char* a, const char* b) {
@@ -267,25 +221,19 @@ void cmd_par(char *args) {
     parse_table_command(args);
 }
 
-void init() {
-    char* video = (char*) VIDEO_MEMORY;
-    for (int i = 0; i < 80 * 25; i++) {
-        video[i * 2] = ' ';
-        video[i * 2 + 1] = 0x00;
-    }
-    say("                              [ OK ] Loading kernel...", 0x02);
-    for (int i = 0; i < 3000000; i++);
-}
-
 void main(void) {
-    init();
+    set_small_font();
+
     char* video = (char*) VIDEO_MEMORY;
     for (int i = 0; i < 80; i++) video[i * 2] = ' ', video[i * 2 + 1] = 0x17;
     bg_color = 0x00;
     for (int i = 80; i < 80 * 25; i++) video[i * 2] = ' ', video[i * 2 + 1] = bg_color | 0x0F;
+
     char* welcome = "WELCOME TO BITOS-32";
     for (int i = 0; i < 19; i++) video[((80 - 19) / 2 + i) * 2] = welcome[i], video[((80 - 19) / 2 + i) * 2 + 1] = 0x1F;
+
     saved_note[0] = '\0';
+
     outb(0x61, inb(0x61) | 3);
     outb(0x42, 0xFF);
     outb(0x42, 0xFF);
@@ -297,14 +245,18 @@ void main(void) {
     outb(0x42, 0x80);
     for (int i = 0; i < 100000; i++);
     outb(0x61, inb(0x61) & 0xFC);
+
     say("\n", WHITE_ON_BLACK);
-    say("BitOS Kernel v2.0\n", bg_color | 0x02);
+    say("BitOS Kernel v2.1\n", bg_color | 0x04);
     update_prompt();
+
     char cmd[256];
     int idx = 0;
+
     while (1) {
         char ch = read_keyboard();
         if (ch == 0) continue;
+
         if (ch == 0x3B) {
             say("\n============== HELP ================\n", WHITE_ON_BLACK);
             say("Commands: help, clear, edit, notes,   \n", WHITE_ON_BLACK);
@@ -313,6 +265,7 @@ void main(void) {
             say("/home> ", bg_color | 0x02);
             continue;
         }
+
         if (ch == 0x3C) {
             say("\n======== SYSTEM INFO ========\n", WHITE_ON_BLACK);
             say("BITOS-32 | 32-bit\n", WHITE_ON_BLACK);
@@ -322,9 +275,11 @@ void main(void) {
             say("/home> ", bg_color | 0x02);
             continue;
         }
+
         if (ch == '\n') {
             cmd[idx] = '\0';
             say("\n", WHITE_ON_BLACK);
+
             if (strcmp(cmd, "help") == 0) cmd_help();
             else if (strcmp(cmd, "clear") == 0) clear_screen();
             else if (strcmp(cmd, "about") == 0) cmd_about();
@@ -361,6 +316,7 @@ void main(void) {
             } else if (cmd[0] != '\0') {
                 say("Unknown command\n", RED_ON_BLACK);
             }
+
             say("> ", bg_color | 0x02);
             idx = 0;
         } else if (ch == '\b') {
