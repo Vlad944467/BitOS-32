@@ -37,7 +37,7 @@ nasm -f elf32 boot/boot.asm -o boot.o
 .Компиляция ядра
 [source,bash]
 ----
-gcc -m32 -ffreestanding -nostdlib -c kernel/kenel1.c -o kenel1.o
+gcc -m32 -ffreestanding -nostdlib -c kernel/PMocero.c -o PMocero.o
 gcc -m32 -ffreestanding -nostdlib -c kernel/commands.c -o commands.o
 gcc -m32 -ffreestanding -nostdlib -c kernel/read_keyboard.c -o read_keyboard.o
 gcc -m32 -ffreestanding -nostdlib -c kernel/ata.c -o ata.o
@@ -48,7 +48,7 @@ gcc -m32 -ffreestanding -nostdlib -c kernel/elf.c -o elf.o
 .Линковка
 [source,bash]
 ----
-ld -m elf_i386 -T boot/linker.ld -o OceroOS.elf boot.o kenel1.o commands.o read_keyboard.o ata.o video.o elf.o
+ld -m elf_i386 -T boot/linker.ld -o OceroOS.elf boot.o PMocero.o commands.o read_keyboard.o ata.o video.o elf.o
 ----
 
 === Сборка через Makefile
@@ -85,7 +85,7 @@ OceroOS-32/
 │   ├── boot.asm          
 │   └── linker.ld         
 ├── kernel/
-│   ├── kenel1.c          # Ядро
+│   ├── enocero.c         # Ядро
 │   ├── commands.c        # Команды шелла
 │   ├── elf.c             # Загрузчик ELF
 │   ├── read_keyboard.c   # PS/2 клавиатура
