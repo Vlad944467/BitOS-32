@@ -28,4 +28,4 @@ https://www.gnu.org/licenses/gpl-3.0.html
 
 *Vlad944467*
 
-GitHub: https://github.com/Vlad944467/ZephOS
+GitHub: https://github.com/Vlad944467/OceroOS-32
