@@ -43,7 +43,7 @@ void cmd_help() {
 void cmd_clear() { clear_screen(); }
 
 void cmd_about() {
-    say("BitOS - 32-bit OS written in C and ASM\n", 0x72);
+    say("ZephOS - 32-bit OS written in C and ASM\n", 0x72);
     say("Features: text mode, colors, keyboard, ATA, FAT16\n", 0x72);
 }
 
@@ -82,7 +82,7 @@ void cmd_mode() { say("Protected mode (32-bit)\n", WHITE_ON_BLACK); }
 
 void cmd_win() {
     say("+--------------[x]-+\n", 0x70);
-    say("|     BITOS-32     |\n", 0x71);
+    say("|      ZephOS      |\n", 0x71);
     say("|   Hello, User!   |\n", 0x70);
     say("+------------------+\n", 0x70);
 }
@@ -95,11 +95,11 @@ void cmd_cat() {
     say(" > ^ <\n", GREEN_ON_BLACK);
 }
 
-void cmd_fetch() { say("BITOS-32 | 32-bit | ATA | FAT16\n", WHITE_ON_BLACK); }
+void cmd_fetch() { say("ZephOS | 32-bit | ATA | FAT16\n", WHITE_ON_BLACK); }
 
 void cmd_cpu() { sysinf(); }
 
-void cmd_version() { say("BitOS-32 v2.0\n", WHITE_ON_BLACK); }
+void cmd_version() { say("ZephOS v2.0\n", WHITE_ON_BLACK); }
 
 void cmd_kernel() {
     say("\n", WHITE_ON_BLACK);
@@ -135,7 +135,7 @@ void cmd_cube() {
 }
 
 void cmd_req() {
-    say("=== BitOS-32 System Requirements ===\n", 0x71);
+    say("==== ZephOS System Requirements ====\n", 0x71);
     say("CPU: i386 or higher                 \n", 0x71);
     say("RAM: 4 MB minimum                   \n", 0x71);
     say("Disk: ATA compatible                \n", 0x71);
