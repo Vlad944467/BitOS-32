@@ -28,4 +28,4 @@ https://www.gnu.org/licenses/gpl-3.0.html
 
 *Vlad944467*
 
-GitHub: https://github.com/Vlad944467/BitOS-32
+GitHub: https://github.com/Vlad944467/ZephOS
