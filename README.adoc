@@ -217,4 +217,4 @@ Copyright (c) 2026 Vlad944467
 
 *Vlad944467*
 
-GitHub: https://github.com/Vlad944467/BitOS-32
+GitHub: https://github.com/Vlad944467/ZephOS
