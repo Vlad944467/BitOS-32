@@ -12,15 +12,16 @@ image:https://img.shields.io/badge/license-GPLv3-green.svg[GPLv3]
 
 == Возможности
 
-* ✅ 32-битный защищённый режим
-* ✅ Загрузка по стандарту Multiboot (GRUB/QEMU)
-* ✅ Поддержка клавиатуры PS/2
-* ✅ Текстовый режим VGA (80x25, 16 цветов)
-* ✅ Звук через PC Speaker
-* ✅ Встроенные команды: `help`, `clear`, `reboot`, `echo`, `win`, `cat`, `fetch`
-* ✅ ATA драйвер (чтение/запись секторов)
-* ✅ Собственный шелл с историей команд
-* ✅ Монолитное ядро
+* 32-битный защищённый режим
+* Загрузка по стандарту Multiboot (GRUB/QEMU)
+* Поддержка клавиатуры PS/2
+* Текстовый режим VGA (80x25, 16 цветов)
+* Звук через PC Speaker
+* Запуск ELF программ
+* Встроенные команды: `help`, `clear`, `reboot`, `echo`, `win`, `cat`, `fetch`
+* ATA драйвер (чтение/запись секторов)
+* Собственный шелл с историей команд
+* Монолитное ядро
 
 
 == Сборка и запуск
@@ -41,6 +42,7 @@ gcc -m32 -ffreestanding -nostdlib -c kernel/commands.c -o commands.o
 gcc -m32 -ffreestanding -nostdlib -c kernel/read_keyboard.c -o read_keyboard.o
 gcc -m32 -ffreestanding -nostdlib -c kernel/ata.c -o ata.o
 gcc -m32 -ffreestanding -nostdlib -c kernel/video.c -o video.o
+gcc -m32 -ffreestanding -nostdlib -c kernel/elf.c -o elf.o
 ----
 
 .Линковка
@@ -76,7 +78,8 @@ BitOS-32/
 │   └── linker.ld         
 ├── kernel/
 │   ├── kenel1.c         
-│   ├── commands.c        
+│   ├── commands.c
+│   ├── elf.c
 │   ├── read_keyboard.c   
 │   ├── ata.c
 │   └── video.c           
