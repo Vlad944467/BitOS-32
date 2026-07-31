@@ -3,8 +3,8 @@ CFLAGS = -m32 -ffreestanding -nostdlib -c
 LD = ld
 LDFLAGS = -m elf_i386 -T boot/linker.ld
 
-TARGET = sysb37.elf
-OBJS = boot.o kenel1.o commands.o read_keyboard.o ata.o video.o elf.o
+TARGET = pmocero.elf
+OBJS = boot.o PMocero.o commands.o read_keyboard.o ata.o video.o elf.o
 
 all: $(TARGET)
 
@@ -14,7 +14,7 @@ $(TARGET): $(OBJS)
 boot.o: boot/boot.asm
 	nasm -f elf32 $< -o $@
 
-kenel1.o: kernel/kenel1.c
+PMocero.o: kernel/PMocero.c
 	$(CC) $(CFLAGS) $< -o $@
 
 commands.o: kernel/commands.c
@@ -36,3 +36,17 @@ clean:
 	rm -f $(OBJS) $(TARGET)
 
 rebuild: clean all
+
+run: $(TARGET)
+	qemu-system-i386 -kernel $(TARGET)
+
+run-hda: $(TARGET)
+	qemu-system-i386 -kernel $(TARGET) -hda fat16.img
+
+help:
+	@echo "=== PMocero Makefile ==="
+	@echo "make          - Собрать ядро"
+	@echo "make clean    - Удалить объектные файлы"
+	@echo "make rebuild  - Пересобрать с нуля"
+	@echo "make run      - Запустить в QEMU"
+	@echo "make run-hda  - Запустить с диском fat16.img"
