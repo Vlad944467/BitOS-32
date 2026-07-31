@@ -229,7 +229,7 @@ void main(void) {
     bg_color = 0x00;
     for (int i = 80; i < 80 * 25; i++) video[i * 2] = ' ', video[i * 2 + 1] = bg_color | 0x0F;
 
-    char* welcome = "WELCOME TO ZephOS";
+    char* welcome = "WELCOME TO OceroOS-32";
     for (int i = 0; i < 19; i++) video[((80 - 19) / 2 + i) * 2] = welcome[i], video[((80 - 19) / 2 + i) * 2 + 1] = 0x1F;
 
     saved_note[0] = '\0';
@@ -247,7 +247,7 @@ void main(void) {
     outb(0x61, inb(0x61) & 0xFC);
 
     say("\n", WHITE_ON_BLACK);
-    say("ZephOS Kernel v2.1\n", bg_color | 0x04);
+    say("OceroOS-32 Kernel v2.1\n", bg_color | 0x04);
     update_prompt();
 
     char cmd[256];
@@ -268,7 +268,7 @@ void main(void) {
 
         if (ch == 0x3C) {
             say("\n======== SYSTEM INFO ========\n", WHITE_ON_BLACK);
-            say("ZephOS | 32-bit\n", WHITE_ON_BLACK);
+            say("OceroOS | 32-bit\n", WHITE_ON_BLACK);
             say("ATA: OK | BFS: ", WHITE_ON_BLACK);
             say(" files\n", WHITE_ON_BLACK);
             say("===============================\n", WHITE_ON_BLACK);
