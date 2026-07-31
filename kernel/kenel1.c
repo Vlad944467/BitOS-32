@@ -268,7 +268,7 @@ void main(void) {
 
         if (ch == 0x3C) {
             say("\n======== SYSTEM INFO ========\n", WHITE_ON_BLACK);
-            say("BITOS-32 | 32-bit\n", WHITE_ON_BLACK);
+            say("ZephOS | 32-bit\n", WHITE_ON_BLACK);
             say("ATA: OK | BFS: ", WHITE_ON_BLACK);
             say(" files\n", WHITE_ON_BLACK);
             say("===============================\n", WHITE_ON_BLACK);
