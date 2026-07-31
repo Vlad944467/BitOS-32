@@ -4,7 +4,7 @@ LD = ld
 LDFLAGS = -m elf_i386 -T boot/linker.ld
 
 TARGET = sysb37.elf
-OBJS = boot.o kenel1.o commands.o read_keyboard.o ata.o
+OBJS = boot.o kenel1.o commands.o read_keyboard.o ata.o video.o elf.o
 
 all: $(TARGET)
 
@@ -24,6 +24,12 @@ read_keyboard.o: kernel/read_keyboard.c
 	$(CC) $(CFLAGS) $< -o $@
 
 ata.o: kernel/ata.c
+	$(CC) $(CFLAGS) $< -o $@
+
+video.o: kernel/video.c
+	$(CC) $(CFLAGS) $< -o $@
+
+elf.o: kernel/elf.c
 	$(CC) $(CFLAGS) $< -o $@
 
 clean:
