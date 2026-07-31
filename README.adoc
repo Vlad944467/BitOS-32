@@ -1,4 +1,4 @@
-= ZephOS
+= OceroOS-32
 :author: Vlad944467
 :revdate: 2026-07-28
 :lang: ru
@@ -48,7 +48,7 @@ gcc -m32 -ffreestanding -nostdlib -c kernel/elf.c -o elf.o
 .Линковка
 [source,bash]
 ----
-ld -m elf_i386 -T boot/linker.ld -o BitOS.elf boot.o kenel1.o commands.o read_keyboard.o ata.o video.o elf.o
+ld -m elf_i386 -T boot/linker.ld -o OceroOS.elf boot.o kenel1.o commands.o read_keyboard.o ata.o video.o elf.o
 ----
 
 === Сборка через Makefile
@@ -65,14 +65,14 @@ make run
 
 [source,bash]
 ----
-qemu-system-i386 -kernel ZephOS.elf
+qemu-system-i386 -kernel OceroOS.elf
 ----
 
 === Запуск с диском (для ATA)
 
 [source,bash]
 ----
-qemu-system-i386 -kernel ZephOS.elf -hda fat16.img
+qemu-system-i386 -kernel OceroOS.elf -hda fat16.img
 ----
 
 
@@ -217,4 +217,4 @@ Copyright (c) 2026 Vlad944467
 
 *Vlad944467*
 
-GitHub: https://github.com/Vlad944467/ZephOS
+GitHub: https://github.com/Vlad944467/OceroOS-32
