@@ -195,7 +195,7 @@ sudo apt install gcc-multilib
 
 *GNU General Public License v3.0*
 
-Copyright (c) 2026 Vlad
+Copyright (c) 2026 Vlad944467
 
 Это свободное программное обеспечение.
 
