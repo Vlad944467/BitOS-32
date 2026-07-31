@@ -1,3 +1,3 @@
 # Images
 
-Скриншоты BitOS-32.
+Скриншоты ZephOS.
