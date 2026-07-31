@@ -85,7 +85,7 @@ OceroOS-32/
 │   ├── boot.asm          
 │   └── linker.ld         
 ├── kernel/
-│   ├── enocero.c         # Ядро
+│   ├── PMocero.c         # Ядро
 │   ├── commands.c        # Команды шелла
 │   ├── elf.c             # Загрузчик ELF
 │   ├── read_keyboard.c   # PS/2 клавиатура
