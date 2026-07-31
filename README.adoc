@@ -18,7 +18,7 @@ image:https://img.shields.io/badge/license-GPLv3-green.svg[GPLv3]
 * Текстовый режим VGA (80x25, 16 цветов)
 * Звук через PC Speaker
 * Запуск ELF программ
-* Встроенные команды: `help`, `clear`, `reboot`, `echo`, `win`, `cat`, `fetch`
+* Встроенные команды: `help`, `clear`, `reboot`, `echo`, `win`, `cat`, `fetch`, `run`
 * ATA драйвер (чтение/запись секторов)
 * Собственный шелл с историей команд
 * Монолитное ядро
@@ -48,7 +48,7 @@ gcc -m32 -ffreestanding -nostdlib -c kernel/elf.c -o elf.o
 .Линковка
 [source,bash]
 ----
-ld -m elf_i386 -T boot/linker.ld -o BitOS.elf boot.o kenel1.o commands.o read_keyboard.o ata.o video.o
+ld -m elf_i386 -T boot/linker.ld -o BitOS.elf boot.o kenel1.o commands.o read_keyboard.o ata.o video.o elf.o
 ----
 
 === Сборка через Makefile
@@ -58,6 +58,7 @@ ld -m elf_i386 -T boot/linker.ld -o BitOS.elf boot.o kenel1.o commands.o read_ke
 make
 make clean
 make rebuild
+make run
 ----
 
 === Запуск в QEMU
@@ -65,6 +66,13 @@ make rebuild
 [source,bash]
 ----
 qemu-system-i386 -kernel BitOS.elf
+----
+
+=== Запуск с диском (для ATA)
+
+[source,bash]
+----
+qemu-system-i386 -kernel BitOS.elf -hda fat16.img
 ----
 
 
@@ -77,12 +85,12 @@ BitOS-32/
 │   ├── boot.asm          
 │   └── linker.ld         
 ├── kernel/
-│   ├── kenel1.c         
-│   ├── commands.c
-│   ├── elf.c
-│   ├── read_keyboard.c   
-│   ├── ata.c
-│   └── video.c           
+│   ├── kenel1.c          # Ядро
+│   ├── commands.c        # Команды шелла
+│   ├── elf.c             # Загрузчик ELF
+│   ├── read_keyboard.c   # PS/2 клавиатура
+│   ├── ata.c             # ATA драйвер
+│   └── video.c           # VGA вывод
 ├── grub/
 │   └── grub.cfg         
 ├── docs/
@@ -112,6 +120,7 @@ BitOS-32/
 | `load` | Загрузить заметку
 | `bgcolor` | Сменить цвет фона
 | `fetch` | Информация об ОС
+| `run <сектор>` | Запустить ELF программу с диска
 |===
 
 === Табличные команды (через `par`)
@@ -129,6 +138,57 @@ BitOS-32/
 | `par clear` | Очистка экрана
 | `par type` | Узнать тип команды
 |===
+
+=== Команда `run`
+
+Загружает и запускает ELF-программу с диска.
+
+[source,bash]
+----
+run 10
+----
+
+Программа должна быть скомпилирована статически для 32-bit x86 и записана в указанный сектор.
+
+==== Компиляция программы
+
+[source,bash]
+----
+gcc -static -m32 -nostdlib -fno-stack-protector -no-pie -Wl,-Ttext=0x100000 -o hello.elf hello.c
+sudo dd if=hello.elf of=fat16.img bs=512 seek=10 conv=notrunc
+----
+
+==== Пример программы `hello.c`
+
+[source,c]
+----
+void _start() {
+    char *video = (char*)0xB8000;
+    char *msg = "Hello from BitOS!";
+    for (int i = 0; msg[i]; i++) {
+        video[i * 2] = msg[i];
+        video[i * 2 + 1] = 0x0F;
+    }
+    while (1);
+}
+----
+
+
+== Зависимости
+
+* `gcc` (с поддержкой `-m32`)
+* `nasm`
+* `ld`
+* `qemu-system-x86` (для запуска)
+* `make`
+
+Для Ubuntu/Debian:
+
+[source,bash]
+----
+sudo apt install gcc nasm qemu-system-x86 make
+sudo apt install gcc-multilib
+----
 
 
 == Лицензия
