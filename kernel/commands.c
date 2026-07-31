@@ -43,7 +43,7 @@ void cmd_help() {
 void cmd_clear() { clear_screen(); }
 
 void cmd_about() {
-    say("ZephOS - 32-bit OS written in C and ASM\n", 0x72);
+    say("OceroOS - 32-bit OS written in C and ASM\n", 0x72);
     say("Features: text mode, colors, keyboard, ATA, FAT16\n", 0x72);
 }
 
@@ -82,12 +82,12 @@ void cmd_mode() { say("Protected mode (32-bit)\n", WHITE_ON_BLACK); }
 
 void cmd_win() {
     say("+--------------[x]-+\n", 0x70);
-    say("|      ZephOS      |\n", 0x71);
+    say("|     OceroOS      |\n", 0x71);
     say("|   Hello, User!   |\n", 0x70);
     say("+------------------+\n", 0x70);
 }
 
-void cmd_say() { say("BITOS is awesome!\n", WHITE_ON_BLACK); }
+void cmd_say() { say("OceroOS is awesome!\n", WHITE_ON_BLACK); }
 
 void cmd_cat() {
     say(" /\\_/\\\n", GREEN_ON_BLACK);
@@ -95,11 +95,11 @@ void cmd_cat() {
     say(" > ^ <\n", GREEN_ON_BLACK);
 }
 
-void cmd_fetch() { say("ZephOS | 32-bit | ATA | FAT16\n", WHITE_ON_BLACK); }
+void cmd_fetch() { say("OceroOS | 32-bit | ATA | FAT16\n", WHITE_ON_BLACK); }
 
 void cmd_cpu() { sysinf(); }
 
-void cmd_version() { say("ZephOS v2.0\n", WHITE_ON_BLACK); }
+void cmd_version() { say("OceroOS v2.0\n", WHITE_ON_BLACK); }
 
 void cmd_kernel() {
     say("\n", WHITE_ON_BLACK);
@@ -135,7 +135,7 @@ void cmd_cube() {
 }
 
 void cmd_req() {
-    say("==== ZephOS System Requirements ====\n", 0x71);
+    say("==== OceroOS System Requirements ===\n", 0x71);
     say("CPU: i386 or higher                 \n", 0x71);
     say("RAM: 4 MB minimum                   \n", 0x71);
     say("Disk: ATA compatible                \n", 0x71);
@@ -179,7 +179,7 @@ void cmd_notes() {
 
 void cmd_edit() {
     char line[256], full_text[4096] = "";
-    say("========== BITOS EDITOR ==========\n", WHITE_ON_BLACK);
+    say("========== OceroOS EDITOR ==========\n", WHITE_ON_BLACK);
     say("Commands: /wq - save, /q. - exit, /ls - show\n", 0x70);
     say("==================================\n", WHITE_ON_BLACK);
     while (1) {
@@ -249,7 +249,7 @@ void cmd_switch() {
     for (int i = 0; i < 25; i++) say("\n", 0x00);
     say("\r", 0x00);
     say("+======================================================+\n", 0x72);
-    say("|                   BITOS DESKTOP                      |\n", 0x71);
+    say("|                   OceroOS DESKTOP                    |\n", 0x71);
     say("+------------------------------------------------------+\n", 0x72);
     say("|     [1] Exit  [2] Reboot  [3] Notes                  |\n", 0x71);
     say("|     [4] Edit  [5] Save to disk [6] load from disk    |\n", 0x71);
