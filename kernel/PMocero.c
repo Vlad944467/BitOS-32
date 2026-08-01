@@ -38,7 +38,7 @@ void cmd_testdisk(void);
 void cmd_mode(void);
 void cmd_win(void);
 void cmd_say(void);
-void cmd_cat(void);
+void cmd_icat(void);
 void cmd_fetch(void);
 void cmd_cpu(void);
 void cmd_version(void);
@@ -302,7 +302,7 @@ void main(void) {
             else if (strcmp(cmd, "par") == 0) cmd_par(NULL);
             else if (strncmp(cmd, "par ", 4) == 0) cmd_par(cmd + 4);
             else if (strcmp(cmd, "switch") == 0) cmd_switch();
-            else if (strcmp(cmd, "cat") == 0) cmd_cat();
+            else if (strcmp(cmd, "cat1") == 0) cmd_icat();
             else if (strcmp(cmd, "save") == 0) cmd_save();
             else if (strcmp(cmd, "load") == 0) cmd_load();
             else if (strcmp(cmd, "8ball") == 0) cmd_8ball();
