@@ -43,12 +43,14 @@ gcc -m32 -ffreestanding -nostdlib -c kernel/read_keyboard.c -o read_keyboard.o
 gcc -m32 -ffreestanding -nostdlib -c kernel/ata.c -o ata.o
 gcc -m32 -ffreestanding -nostdlib -c kernel/video.c -o video.o
 gcc -m32 -ffreestanding -nostdlib -c kernel/elf.c -o elf.o
+gcc -m32 -ffreestanding -nostdlib -c init.c -o init.o
+gcc -m32 -ffreestanding -nostdlib -c OFS.c -o OFS.o
 ----
 
 .Линковка
 [source,bash]
 ----
-ld -m elf_i386 -T boot/linker.ld -o OceroOS.elf boot.o PMocero.o commands.o read_keyboard.o ata.o video.o elf.o
+ld -m elf_i386 -T boot/linker.ld -o OceroOS.elf boot.o PMocero.o commands.o read_keyboard.o ata.o video.o elf.o init.o OFS.o
 ----
 
 === Сборка через Makefile
@@ -84,6 +86,9 @@ OceroOS-32/
 ├── boot/
 │   ├── boot.asm          
 │   └── linker.ld         
+├── fs/
+│   ├── OFS.c
+│   └── README.adoc
 ├── kernel/
 │   ├── PMocero.c         # Ядро
 │   ├── commands.c        # Команды шелла
