@@ -87,7 +87,7 @@ void cmd_win() {
     say("+------------------+\n", 0x70);
 }
 
-void cmd_say() { say("OceroOS is awesome!\n", WHITE_ON_BLACK); }
+void cmd_say() { say("BITOS is awesome!\n", WHITE_ON_BLACK); }
 
 void cmd_icat() {
     say(" /\\_/\\\n", GREEN_ON_BLACK);
@@ -99,12 +99,12 @@ void cmd_fetch() { say("OceroOS | 32-bit | ATA | FAT16\n", WHITE_ON_BLACK); }
 
 void cmd_cpu() { sysinf(); }
 
-void cmd_version() { say("OceroOS v2.0\n", WHITE_ON_BLACK); }
+void cmd_version() { say("OceroOS-32 v2.1\n", WHITE_ON_BLACK); }
 
 void cmd_kernel() {
     say("\n", WHITE_ON_BLACK);
     say("Version kernel: sysb36\n", WHITE_ON_BLACK);
-    say("Version OS: 2.0\n", WHITE_ON_BLACK);
+    say("Version OS: 2.1\n", WHITE_ON_BLACK);
 }
 
 void cmd_cube() {
@@ -135,7 +135,7 @@ void cmd_cube() {
 }
 
 void cmd_req() {
-    say("==== OceroOS System Requirements ===\n", 0x71);
+    say("=== OceroOS-32 System Requirements ===\n", 0x71);
     say("CPU: i386 or higher                 \n", 0x71);
     say("RAM: 4 MB minimum                   \n", 0x71);
     say("Disk: ATA compatible                \n", 0x71);
@@ -179,7 +179,7 @@ void cmd_notes() {
 
 void cmd_edit() {
     char line[256], full_text[4096] = "";
-    say("========== OceroOS EDITOR ==========\n", WHITE_ON_BLACK);
+    say("========== Ocero EDITOR ==========\n", WHITE_ON_BLACK);
     say("Commands: /wq - save, /q. - exit, /ls - show\n", 0x70);
     say("==================================\n", WHITE_ON_BLACK);
     while (1) {
@@ -263,8 +263,6 @@ void cmd_switch() {
     }
     for (int i = 0; i < 80 * 25; i++) video[i * 2] = ' ', video[i * 2 + 1] = 0x00;
 }
-
-// commands (par)
 
 void cmd_time(char *args) {
     int sec = 0, min = 0, hour = 0, day = 7, month = 6, year = 2026;
@@ -364,3 +362,4 @@ void clear_cmd(char *args) {
     char* video = (char*) 0xB8000;
     for (int i = 0; i < 80 * 25; i++) video[i * 2] = ' ', video[i * 2 + 1] = 0x00;
 }
+
