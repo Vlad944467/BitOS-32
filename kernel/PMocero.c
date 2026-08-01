@@ -18,7 +18,6 @@
 extern int ofs_init(uint32_t start_sector);
 extern void ofs_list(void);
 extern void ofs_format(uint32_t total_sectors);
-
 extern void print_status(const char* msg, int ok);
 extern void print_loading(const char* msg);
 extern int init_system(void);
@@ -72,6 +71,8 @@ void cmd_par(char *args);
 void parse_table_command(char *cmd);
 void cmd_run(char *args);
 void cmd_cat1(char* args);
+void cmd_ls(void);
+void cmd_write(char* args);
 
 void ata_read_sector(uint32_t lba, uint8_t* buffer);
 void ata_write_sector(uint32_t lba, uint8_t* buffer);
@@ -125,7 +126,6 @@ char* strcpy(char* dest, const char* src) {
     while ((*d++ = *src++));
     return dest;
 }
-
 
 void cpuid(int code, int *a, int *b, int *c, int *d) {
     asm volatile("cpuid" : "=a"(*a), "=b"(*b), "=c"(*c), "=d"(*d) : "a"(code));
@@ -239,12 +239,11 @@ void main(void) {
     for (int i = 0; i < 80; i++) video[i * 2] = ' ', video[i * 2 + 1] = 0x17;
     bg_color = 0x00;
     for (int i = 80; i < 80 * 25; i++) video[i * 2] = ' ', video[i * 2 + 1] = bg_color | 0x0F;
-    
+
     saved_note[0] = '\0';
     init_system();
 
-    ofs_init(0);    
-    ofs_list();    
+    ofs_list();
 
     outb(0x61, inb(0x61) | 3);
     outb(0x42, 0xFF);
@@ -259,7 +258,7 @@ void main(void) {
     outb(0x61, inb(0x61) & 0xFC);
 
     say("\n", WHITE_ON_BLACK);
-    say("Ocero Kernel v2.1\n", bg_color | 0x04);
+    say("OceroOS Kernel v2.1\n", bg_color | 0x04);
     update_prompt();
 
     char cmd[256];
@@ -281,7 +280,7 @@ void main(void) {
         if (ch == 0x3C) {
             say("\n======== SYSTEM INFO ========\n", WHITE_ON_BLACK);
             say("OceroOS | 32-bit\n", WHITE_ON_BLACK);
-            say("ATA: OK |  ", WHITE_ON_BLACK);
+            say("ATA: OK | BFS: ", WHITE_ON_BLACK);
             say(" files\n", WHITE_ON_BLACK);
             say("===============================\n", WHITE_ON_BLACK);
             say("/home> ", bg_color | 0x02);
@@ -303,6 +302,7 @@ void main(void) {
             else if (strncmp(cmd, "par ", 4) == 0) cmd_par(cmd + 4);
             else if (strcmp(cmd, "switch") == 0) cmd_switch();
             else if (strcmp(cmd, "cat1") == 0) cmd_icat();
+            else if (strncmp(cmd, "cat ", 4) == 0) cmd_cat1(cmd + 4);
             else if (strcmp(cmd, "save") == 0) cmd_save();
             else if (strcmp(cmd, "load") == 0) cmd_load();
             else if (strcmp(cmd, "8ball") == 0) cmd_8ball();
@@ -322,10 +322,8 @@ void main(void) {
             else if (strcmp(cmd, "fetch") == 0) cmd_fetch();
             else if (strncmp(cmd, "run ", 4) == 0) cmd_run(cmd + 4);
             else if (strcmp(cmd, "shutdown") == 0) cmd_shutdown();
-            else if (strcmp(cmd, "clear") == 0) clear_screen();
             else if (strcmp(cmd, "ls") == 0) cmd_ls();
             else if (strncmp(cmd, "write ", 6) == 0) cmd_write(cmd + 6);
-            else if (strcmp(cmd, "cat") == 0) cmd_cat1(cmd + 4);
             else if (strcmp(cmd, "reboot") == 0) cmd_reboot();
             else if (cmd[0] == 'e' && cmd[1] == 'c' && cmd[2] == 'h' && cmd[3] == 'o' && cmd[4] == ' ') {
                 say(cmd + 5, WHITE_ON_BLACK);
