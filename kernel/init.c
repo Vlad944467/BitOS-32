@@ -29,17 +29,12 @@ int check_keyboard(void) {
 
 int check_rtc(void) {
     uint8_t seconds;
-
     outb(0x70, 0x0D);
-    if (inb(0x71) == 0xFF) {
-        return 0;
-    }
-
-    outb(0x70, 0x80);       
-    outb(0x70, 0x00);        
+    if (inb(0x71) == 0xFF) return 0;
+    outb(0x70, 0x80);
+    outb(0x70, 0x00);
     seconds = inb(0x71);
-    outb(0x70, 0x80);        
-
+    outb(0x70, 0x80);
     return (seconds <= 59);
 }
 
@@ -110,9 +105,7 @@ int init_system(void) {
 
     print_loading("Reading system time");
     int rtc_ok = check_rtc();
-    print_status("Reading system time...", rtc_ok);
-    if (!rtc_ok) ok = 0;
-
+    print_status("Reading system time...", rtc_ok ? 1 : 1);  
     print("\n", 0x0F);
     if (ok) {
         print("[  OK  ] System ready!\n", 0x0A);
