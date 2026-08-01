@@ -89,7 +89,7 @@ void cmd_win() {
 
 void cmd_say() { say("OceroOS is awesome!\n", WHITE_ON_BLACK); }
 
-void cmd_cat() {
+void cmd_icat() {
     say(" /\\_/\\\n", GREEN_ON_BLACK);
     say("( o.o )\n", GREEN_ON_BLACK);
     say(" > ^ <\n", GREEN_ON_BLACK);
