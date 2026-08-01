@@ -25,7 +25,7 @@ extern void ata_read_sector(uint32_t lba, uint8_t* buffer);
 extern void ata_write_sector(uint32_t lba, uint8_t* buffer);
 extern void print(const char* str, int color);
 extern void print_int(int num, int color);
-extern void putchar(char c);
+extern int bg_color; 
 
 static superblock_t sb;
 static int ready = 0;
@@ -176,7 +176,8 @@ void cmd_cat1(char* args) {
 
     if (size > 0) {
         for (int i = 0; i < size; i++) {
-            putchar(buf[i]);
+            char str[2] = {buf[i], '\0'};
+            print(str, bg_color | 0x0F); 
         }
         print("\n", 0x0F);
     }
