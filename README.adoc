@@ -43,8 +43,8 @@ gcc -m32 -ffreestanding -nostdlib -c kernel/read_keyboard.c -o read_keyboard.o
 gcc -m32 -ffreestanding -nostdlib -c kernel/ata.c -o ata.o
 gcc -m32 -ffreestanding -nostdlib -c kernel/video.c -o video.o
 gcc -m32 -ffreestanding -nostdlib -c kernel/elf.c -o elf.o
-gcc -m32 -ffreestanding -nostdlib -c init.c -o init.o
-gcc -m32 -ffreestanding -nostdlib -c OFS.c -o OFS.o
+gcc -m32 -ffreestanding -nostdlib -c kernel/init.c -o init.o
+gcc -m32 -ffreestanding -nostdlib -c kernel/OFS.c -o OFS.o
 ----
 
 .Линковка
