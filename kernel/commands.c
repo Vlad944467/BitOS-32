@@ -5,6 +5,7 @@
 #define GREEN_ON_BLACK  0x02
 #define RED_ON_BLACK    0x04
 #define MAX_HIST 20
+#define VIDEO_MEMORY 0xB8000
 
 #define say(s, c) print(s, c)
 
@@ -25,16 +26,47 @@ extern void show_history(void);
 extern int bg_color;
 extern char saved_note[4096];
 extern int strcmp(const char* a, const char* b);
-extern void cmd_par(char *args);
-extern void parse_table_command(char *cmd);
 
-typedef struct {
+extern struct {
     char *name;
     void (*func)(char *args);
     char *desc;
-} command_t;
+} commands[];
 
-extern command_t commands[];
+int mystrlen(const char* s) {
+    int len = 0;
+    while (s[len]) len++;
+    return len;
+}
+
+char* mystrcpy(char* dest, const char* src) {
+    char* d = dest;
+    while ((*d++ = *src++));
+    return dest;
+}
+
+char* mystrcat(char* dest, const char* src) {
+    char* d = dest;
+    while (*d) d++;
+    while ((*d++ = *src++));
+    return dest;
+}
+
+void print_code(unsigned char code, int color) {
+    char c[2] = {code, 0};
+    print(c, color);
+}
+
+void cmd_h(char *args) {
+    say("=== Table commands ===\n", 0x0E);
+    for (int i = 0; commands[i].name != NULL; i++) {
+        say("  ", WHITE_ON_BLACK);
+        say(commands[i].name, WHITE_ON_BLACK);
+        say(" - ", WHITE_ON_BLACK);
+        say(commands[i].desc, WHITE_ON_BLACK);
+        say("\n", WHITE_ON_BLACK);
+    }
+}
 
 void cmd_help() {
     say("Commands: help, clear, about, ping, mode, cat, win, reboot, echo, fetch, say, edit, notes, 8ball, testdisk, save, load\n", WHITE_ON_BLACK);
@@ -43,7 +75,7 @@ void cmd_help() {
 void cmd_clear() { clear_screen(); }
 
 void cmd_about() {
-    say("OceroOS - 32-bit OS written in C and ASM\n", 0x72);
+    say("Ocero - 32-bit OS written in C and ASM\n", 0x72);
     say("Features: text mode, colors, keyboard, ATA, FAT16\n", 0x72);
 }
 
@@ -82,12 +114,12 @@ void cmd_mode() { say("Protected mode (32-bit)\n", WHITE_ON_BLACK); }
 
 void cmd_win() {
     say("+--------------[x]-+\n", 0x70);
-    say("|     OceroOS      |\n", 0x71);
+    say("|     Ocero-32     |\n", 0x71);
     say("|   Hello, User!   |\n", 0x70);
     say("+------------------+\n", 0x70);
 }
 
-void cmd_say() { say("BITOS is awesome!\n", WHITE_ON_BLACK); }
+void cmd_say() { say("Ocero is awesome!\n", WHITE_ON_BLACK); }
 
 void cmd_icat() {
     say(" /\\_/\\\n", GREEN_ON_BLACK);
@@ -95,11 +127,11 @@ void cmd_icat() {
     say(" > ^ <\n", GREEN_ON_BLACK);
 }
 
-void cmd_fetch() { say("OceroOS | 32-bit | ATA | FAT16\n", WHITE_ON_BLACK); }
+void cmd_fetch() { say("Ocero | 32-bit | ATA | FAT16\n", WHITE_ON_BLACK); }
 
 void cmd_cpu() { sysinf(); }
 
-void cmd_version() { say("OceroOS-32 v2.1\n", WHITE_ON_BLACK); }
+void cmd_version() { say("Ocero-32 v2.1\n", WHITE_ON_BLACK); }
 
 void cmd_kernel() {
     say("\n", WHITE_ON_BLACK);
@@ -135,13 +167,13 @@ void cmd_cube() {
 }
 
 void cmd_req() {
-    say("=== OceroOS-32 System Requirements ===\n", 0x71);
-    say("CPU: i386 or higher                 \n", 0x71);
-    say("RAM: 4 MB minimum                   \n", 0x71);
-    say("Disk: ATA compatible                \n", 0x71);
-    say("Video: VGA text mode 80x25          \n", 0x71);
-    say("Input: Keyboard                     \n", 0x71);
-    say("====================================\n", 0x71);
+    say("=== Ocero-32 System Requirements ===\n", WHITE_ON_BLACK);
+    say("CPU: i386 or higher                 \n", WHITE_ON_BLACK);
+    say("RAM: 4 MB minimum                   \n", WHITE_ON_BLACK);
+    say("Disk: ATA compatible                \n", WHITE_ON_BLACK);
+    say("Video: VGA text mode 80x25          \n", WHITE_ON_BLACK);
+    say("Input: Keyboard                     \n", WHITE_ON_BLACK);
+    say("====================================\n", WHITE_ON_BLACK);
 }
 
 void cmd_window() {
@@ -183,7 +215,7 @@ void cmd_edit() {
     say("Commands: /wq - save, /q. - exit, /ls - show\n", 0x70);
     say("==================================\n", WHITE_ON_BLACK);
     while (1) {
-        say("> ", WHITE_ON_BLACK);
+        say(" ", WHITE_ON_BLACK);
         int line_pos = 0;
         while (1) {
             char c = read_keyboard();
@@ -249,7 +281,7 @@ void cmd_switch() {
     for (int i = 0; i < 25; i++) say("\n", 0x00);
     say("\r", 0x00);
     say("+======================================================+\n", 0x72);
-    say("|                   OceroOS DESKTOP                    |\n", 0x71);
+    say("|                   Ocero DESKTOP                     |\n", 0x71);
     say("+------------------------------------------------------+\n", 0x72);
     say("|     [1] Exit  [2] Reboot  [3] Notes                  |\n", 0x71);
     say("|     [4] Edit  [5] Save to disk [6] load from disk    |\n", 0x71);
@@ -288,18 +320,6 @@ void cmd_time(char *args) {
 
 void cmd_reb(char *args) { say("Rebooting...\n", RED_ON_BLACK); outb(0x64, 0xFE); }
 void cmd_sh(char *args) { say("Shutting down...\n", WHITE_ON_BLACK); outw(0x604, 0x2000); while (1); }
-
-void cmd_h(char *args) {
-    say("=== Table commands ===\n", 0x0E);
-    for (int i = 0; commands[i].name != NULL; i++) {
-        say("  ", WHITE_ON_BLACK);
-        say(commands[i].name, WHITE_ON_BLACK);
-        say(" - ", WHITE_ON_BLACK);
-        say(commands[i].desc, WHITE_ON_BLACK);
-        say("\n", WHITE_ON_BLACK);
-    }
-}
-
 void cmd_hello(char *args) { say("Hello, user!\n", WHITE_ON_BLACK); }
 void cmd_echo(char *args) { if (args) { say(args, WHITE_ON_BLACK); say("\n", WHITE_ON_BLACK); } }
 
@@ -362,4 +382,3 @@ void clear_cmd(char *args) {
     char* video = (char*) 0xB8000;
     for (int i = 0; i < 80 * 25; i++) video[i * 2] = ' ', video[i * 2 + 1] = 0x00;
 }
-
