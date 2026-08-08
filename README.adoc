@@ -7,7 +7,7 @@ image:https://img.shields.io/badge/OS-32--bit-blue.svg[32-bit]
 image:https://img.shields.io/badge/lang-C-blue.svg[C]
 image:https://img.shields.io/badge/license-GPLv3-green.svg[GPLv3]
 
-**32-битное монолитное ядро, написанная на C и Assembly**
+**32-битное монолитное ядро, написанное на C и Assembly**
 
 
 == Возможности
@@ -18,8 +18,10 @@ image:https://img.shields.io/badge/license-GPLv3-green.svg[GPLv3]
 * Текстовый режим VGA (80x25, 16 цветов)
 * Звук через PC Speaker
 * Запуск ELF программ
-* Встроенные команды: `help`, `clear`, `reboot`, `echo`, `win`, `cat`, `fetch`, `run`
+* Встроенные команды: `help`, `clear`, `reboot`, `echo`, `win`, `cat`, `fetch`, `run`, `settings`
 * ATA драйвер (чтение/запись секторов)
+* OFS — собственная файловая система
+* Текстовые окна (псевдографика)
 * Собственный шелл с историей команд
 * Монолитное ядро
 
@@ -45,12 +47,13 @@ gcc -m32 -ffreestanding -nostdlib -c kernel/video.c -o video.o
 gcc -m32 -ffreestanding -nostdlib -c kernel/elf.c -o elf.o
 gcc -m32 -ffreestanding -nostdlib -c kernel/init.c -o init.o
 gcc -m32 -ffreestanding -nostdlib -c kernel/OFS.c -o OFS.o
+gcc -m32 -ffreestanding -nostdlib -c kernel/windows.c -o windows.o
 ----
 
 .Линковка
 [source,bash]
 ----
-ld -m elf_i386 -T boot/linker.ld -o OceroOS.elf boot.o PMocero.o commands.o read_keyboard.o ata.o video.o elf.o init.o OFS.o
+ld -m elf_i386 -T boot/linker.ld -o OceroOS.elf boot.o PMocero.o commands.o read_keyboard.o ata.o video.o elf.o init.o OFS.o windows.o
 ----
 
 === Сборка через Makefile
@@ -70,7 +73,7 @@ make run
 qemu-system-i386 -kernel OceroOS.elf
 ----
 
-=== Запуск с диском (для ATA)
+=== Запуск с диском (для ATA/OFS)
 
 [source,bash]
 ----
@@ -86,16 +89,16 @@ OceroOS-32/
 ├── boot/
 │   ├── boot.asm          
 │   └── linker.ld         
-├── fs/
-│   ├── OFS.c
-│   └── README.adoc
 ├── kernel/
-│   ├── PMocero.c         # Ядро
+│   ├── PMocero.c         # Ядро (главный файл)
 │   ├── commands.c        # Команды шелла
+│   ├── windows.c         # Окна и псевдографика
 │   ├── elf.c             # Загрузчик ELF
 │   ├── read_keyboard.c   # PS/2 клавиатура
 │   ├── ata.c             # ATA драйвер
-│   └── video.c           # VGA вывод
+│   ├── video.c           # VGA вывод
+│   ├── init.c            # Системные иниты
+│   └── OFS.c             # Файловая система
 ├── grub/
 │   └── grub.cfg         
 ├── docs/
@@ -121,11 +124,25 @@ OceroOS-32/
 | `echo` | Вывести текст
 | `edit` | Текстовый редактор
 | `notes` | Показать сохранённую заметку
-| `save` | Сохранить заметку
-| `load` | Загрузить заметку
-| `bgcolor` | Сменить цвет фона
+| `save` | Сохранить заметку на диск
+| `load` | Загрузить заметку с диска
+| `bgcolor` | Сменить цвет фона (0-F)
 | `fetch` | Информация об ОС
+| `ls` | Список файлов в OFS
+| `cat <файл>` | Показать содержимое файла
+| `write <файл> <текст>` | Создать файл
 | `run <сектор>` | Запустить ELF программу с диска
+| `settings` | Меню настроек (Reboot/Shutdown/Cancel)
+|===
+
+=== Окна (псевдографика)
+
+[cols="1,3"]
+|===
+| Команда | Описание
+| `note2` | Показать заметку в окне
+| `disk` | Информация о диске в окне
+| `tt` | Тестовое окно
 |===
 
 === Табличные команды (через `par`)
