@@ -21,12 +21,20 @@ extern void ofs_format(uint32_t total_sectors);
 extern void print_status(const char* msg, int ok);
 extern void print_loading(const char* msg);
 extern int init_system(void);
+extern void cmd_win_ls(void);
+extern void cmd_win_clock(void);
+extern void cmd_windo4(void);
+extern void cmd_win_tt(void);
+extern void cmd_win_disk(void);
+extern void cmd_settings(void);
+extern void cmd_h(char *args);
 
 char current_dir[32] = "/home";
 char saved_note[4096];
 char *history[MAX_HIST];
 int hist_count = 0;
 int bg_color = 0x00;
+int cursor_pos = 0;
 
 void cmd_help(void);
 void cmd_clear(void);
@@ -243,6 +251,7 @@ void main(void) {
     saved_note[0] = '\0';
     init_system();
 
+    //ofs_format(10000);
     ofs_list();
 
     outb(0x61, inb(0x61) | 3);
@@ -258,7 +267,7 @@ void main(void) {
     outb(0x61, inb(0x61) & 0xFC);
 
     say("\n", WHITE_ON_BLACK);
-    say("OceroOS Kernel v2.1\n", bg_color | 0x04);
+    say("Ocero Kernel v2.1\n", bg_color | 0x04);
     update_prompt();
 
     char cmd[256];
@@ -270,8 +279,7 @@ void main(void) {
 
         if (ch == 0x3B) {
             say("\n============== HELP ================\n", WHITE_ON_BLACK);
-            say("Commands: help, clear, edit, notes,   \n", WHITE_ON_BLACK);
-            say("load, reboot, music, datetime, echo   \n", WHITE_ON_BLACK);
+            say("Commands: help, clear, edit, notes, load, reboot, datetime, echo\n", WHITE_ON_BLACK);
             say("======================================\n", WHITE_ON_BLACK);
             say("/home> ", bg_color | 0x02);
             continue;
@@ -279,15 +287,14 @@ void main(void) {
 
         if (ch == 0x3C) {
             say("\n======== SYSTEM INFO ========\n", WHITE_ON_BLACK);
-            say("OceroOS | 32-bit\n", WHITE_ON_BLACK);
-            say("ATA: OK | BFS: ", WHITE_ON_BLACK);
-            say(" files\n", WHITE_ON_BLACK);
+            say("Ocero-32 | 32-bit\n", WHITE_ON_BLACK);
+            say("ATA: OK | BFS: files\n", WHITE_ON_BLACK);
             say("===============================\n", WHITE_ON_BLACK);
             say("/home> ", bg_color | 0x02);
             continue;
         }
 
-        if (ch == '\n') {
+        if (ch == '\n' || ch == '\r') {
             cmd[idx] = '\0';
             say("\n", WHITE_ON_BLACK);
 
@@ -324,6 +331,10 @@ void main(void) {
             else if (strcmp(cmd, "shutdown") == 0) cmd_shutdown();
             else if (strcmp(cmd, "ls") == 0) cmd_ls();
             else if (strncmp(cmd, "write ", 6) == 0) cmd_write(cmd + 6);
+            else if (strcmp(cmd, "note2") == 0) cmd_windo4();
+            else if (strcmp(cmd, "disk") == 0) cmd_win_disk();
+            else if (strcmp(cmd, "tt") == 0) cmd_win_tt();
+            else if (strcmp(cmd, "settings") == 0) cmd_settings();
             else if (strcmp(cmd, "reboot") == 0) cmd_reboot();
             else if (cmd[0] == 'e' && cmd[1] == 'c' && cmd[2] == 'h' && cmd[3] == 'o' && cmd[4] == ' ') {
                 say(cmd + 5, WHITE_ON_BLACK);
@@ -334,12 +345,18 @@ void main(void) {
 
             say("> ", bg_color | 0x02);
             idx = 0;
-        } else if (ch == '\b') {
+            continue;
+        }
+
+        if (ch == '\b') {
             if (idx > 0) {
                 idx--;
                 say("\b \b", bg_color | 0x0F);
             }
-        } else if (idx < 255) {
+            continue;
+        }
+
+        if (idx < 255) {
             cmd[idx++] = ch;
             putchar(ch, bg_color | 0x0F);
         }
