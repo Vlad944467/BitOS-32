@@ -46,7 +46,7 @@ gcc -m32 -ffreestanding -nostdlib -c kernel/ata.c -o ata.o
 gcc -m32 -ffreestanding -nostdlib -c kernel/video.c -o video.o
 gcc -m32 -ffreestanding -nostdlib -c kernel/elf.c -o elf.o
 gcc -m32 -ffreestanding -nostdlib -c kernel/init.c -o init.o
-gcc -m32 -ffreestanding -nostdlib -c kernel/OFS.c -o OFS.o
+gcc -m32 -ffreestanding -nostdlib -c kernel/fs/OFS.c -o OFS.o
 gcc -m32 -ffreestanding -nostdlib -c kernel/windows.c -o windows.o
 ----
 
@@ -92,13 +92,14 @@ OceroOS-32/
 ├── kernel/
 │   ├── PMocero.c         # Ядро (главный файл)
 │   ├── commands.c        # Команды шелла
-│   ├── windows.c         # Окна и псевдографика
+│   ├── Twindows.c         # Окна и псевдографика
 │   ├── elf.c             # Загрузчик ELF
 │   ├── read_keyboard.c   # PS/2 клавиатура
 │   ├── ata.c             # ATA драйвер
 │   ├── video.c           # VGA вывод
 │   ├── init.c            # Системные иниты
-│   └── OFS.c             # Файловая система
+│   └── fs/
+│       └── OFS.c         # Файловая система
 ├── grub/
 │   └── grub.cfg         
 ├── docs/
