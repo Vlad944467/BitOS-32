@@ -88,22 +88,27 @@ qemu-system-i386 -kernel OceroOS.elf -hda fat16.img
 OceroOS-32/
 ├── boot/
 │   ├── boot.asm          
-│   └── linker.ld         
-├── kernel/
-│   ├── PMocero.c         # Ядро (главный файл)
-│   ├── commands.c        # Команды шелла
-│   ├── Twindows.c         # Окна и псевдографика
-│   ├── elf.c             # Загрузчик ELF
-│   ├── read_keyboard.c   # PS/2 клавиатура
-│   ├── ata.c             # ATA драйвер
-│   ├── video.c           # VGA вывод
-│   ├── init.c            # Системные иниты
-│   └── fs/
-│       └── OFS.c         # Файловая система
+│   └── linker.ld       
 ├── grub/
 │   └── grub.cfg         
 ├── docs/
-│   └── COMMANDS.md       
+│   └── COMMANDS.md
+├── src/
+│   ├── boot/
+│   │   ├── boot.asm
+│   │   └── linker.ld 
+│   └── kernel/
+│       ├── fs/
+│       │   ├── OFS.c
+│       │   └── README.adoc
+│       ├── PMocero.c
+│       ├── Twindows.c
+│       ├── ata.c
+│       ├── commands.c
+│       ├── elf.c
+│       ├── init.c
+│       ├── read_keyboard.c
+│       └── video.c   
 ├── images/
 ├── LICENSE.adoc 
 ├── Makefile
